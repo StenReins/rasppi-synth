@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QGridLayout, QPushButton, QMenu
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QCursor
-import sys
+import tkinter
+from tkinter import filedialog
+import os
 
 class Pad(QPushButton):
     def __init__(self, number = None, path = None, parent = None):
@@ -24,7 +24,7 @@ class Pad(QPushButton):
             }
         """)
         if self.pad_num is not None:
-            self.setText("Pad {num}".format(num = self.pad_num))
+            self.setText(f"Pad {self.pad_num}")
 
     def contextMenuEvent(self, a0): ## a0 -> event if its not working
         menu = QMenu(self)
@@ -35,10 +35,16 @@ class Pad(QPushButton):
             self.modifyMusicFile()
         elif action == pad_reset:
             self.resetMusicFile()
-    def modifyMusicFile():
-        return 0 ##TBD
-    def resetMusicFile():
-        return 0 ##tbd
+    def modifyMusicFile(self):
+        tkinter.Tk().withdraw()
+        self.path = filedialog.askopenfilename(filetypes=(("Audio Files", ".wav .mp3"),   ("All Files", "*.*")))
+        if self.path is not "":
+            file_name = os.path.split(self.path)[1]
+            self.setText(file_name)
+    def resetMusicFile(self):
+        if self.path is not None:
+            self.path = None
+            self.setText(f"Pad {self.pad_num}")
 
 class DrumPad(QWidget):
     pads = []
@@ -51,7 +57,7 @@ class DrumPad(QWidget):
     
     def initUI(self):
         layout = QGridLayout()
-        layout.setSpacing(10)
+        layout.setSpacing(10) 
         for row in range(4):
             for col in range(4):
                 pad_num = row * 4 + col + 1
