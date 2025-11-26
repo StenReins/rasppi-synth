@@ -2,11 +2,12 @@ from PyQt6.QtWidgets import QWidget, QGridLayout, QPushButton, QMenu
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtCore import QUrl
 import tkinter
-from tkinter import filedialog
-from gpiozero import *
 from gpiozero import Button
+from tkinter import filedialog
 import time
 import os
+
+matrix_size = 2
 
 class Audio:
     def __init__(self):
@@ -35,7 +36,9 @@ class Pad(QPushButton):
         self.path = path
         self.pad_num = number
         self.state = state
-        ##self.pad_button = Button(number)
+
+        self.padbutton = Button(self.pad_num + 1)
+        
         super().__init__(parent)
 
         ## audi player
@@ -83,6 +86,20 @@ class Pad(QPushButton):
         if self.path is not None:
             self.path = None
             self.setText(f"Pad {self.pad_num}")
+    def readButtonPress(self):
+        while True:
+            match self.state:
+                case 0: ##trigger
+                    if self.padbutton.is_pressed():
+                        print(f"Pad {self.pad_num} pressed")
+                        self.click()
+                case 1: ## hold
+                    print(f"Holding pad {self.pad_num}")
+                    return 0 ##TBD
+                case 2: ##loop
+                    print(f"Looping pad {self.pad_num}")
+                    return 0 ##TBD
+                
 
 class DrumPad(QWidget):
     pads = []
@@ -96,9 +113,9 @@ class DrumPad(QWidget):
     def initUI(self):
         layout = QGridLayout()
         layout.setSpacing(10) 
-        for row in range(3):
-            for col in range(3):
-                pad_num = row * 4 + col + 1
+        for row in range(matrix_size):
+            for col in range(matrix_size):
+                pad_num = row * matrix_size + col + 1
                 pad = Pad(pad_num)
                 layout.addWidget(pad, row, col)
                 self.pads.append([pad, pad_num])
