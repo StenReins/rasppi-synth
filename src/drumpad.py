@@ -3,6 +3,9 @@ from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtCore import QUrl
 import tkinter
 from tkinter import filedialog
+from gpiozero import *
+from gpiozero import Button
+import time
 import os
 
 class Audio:
@@ -23,9 +26,16 @@ class Audio:
         print("Playing:", path)   
 
 class Pad(QPushButton):
-    def __init__(self, number = None, path = None, parent = None):
+    states = {
+    'triggered': 0,
+    'held': 1,
+    'looped':2
+    }
+    def __init__(self, number = None, path = None, parent = None, state = states[0]):
         self.path = path
         self.pad_num = number
+        self.state = state
+        self.pad_button = Button(number)
         super().__init__(parent)
 
         ## audi player
@@ -86,8 +96,8 @@ class DrumPad(QWidget):
     def initUI(self):
         layout = QGridLayout()
         layout.setSpacing(10) 
-        for row in range(4):
-            for col in range(4):
+        for row in range(3):
+            for col in range(3):
                 pad_num = row * 4 + col + 1
                 pad = Pad(pad_num)
                 layout.addWidget(pad, row, col)

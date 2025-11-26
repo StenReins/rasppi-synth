@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QToolBar, QWidget, QLabel, QSizePolicy
-from PyQt6.QtGui import QFont, QAction, QActionGroup
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtGui import QFont, QAction, QActionGroup, QIcon
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from styles import topbar
 
 class TopBar(QToolBar):
@@ -22,9 +22,19 @@ class TopBar(QToolBar):
         self.drumpad_btn = QAction("Drumpad", self)
         self.drumpad_btn.setCheckable(True)
         self.drumpad_btn.setChecked(True)
-        self.drumpad_btn.triggered.connect(lambda checked, p='Drumpad': self.navigationRequested.emit(p))
+        self.drumpad_btn.triggered.connect(lambda event: print("Drumpad"))
         self.pageswitches.addAction(self.drumpad_btn)
         self.addAction(self.drumpad_btn)
+
+        self.record_btn = QAction("Record", self)
+        self.record_btn.setIcon(QIcon("src/resources/icons/record-icon.svg"))
+        self.record_btn.setCheckable(True)
+        self.pageswitches.addAction(self.record_btn)
+        try:
+            self.record_btn.toggled.connect(self.enableRecordBtn)
+        except Exception as e:
+            print(e)
+        self.addAction(self.record_btn)
 
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
