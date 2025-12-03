@@ -6,7 +6,8 @@ from styles import topbar
 class TopBar(QToolBar):
     navigationRequested = pyqtSignal(str)
     themeToggleRequested = pyqtSignal()
-    
+
+    volumeChanged = pyqtSignal(int)
     project_BPM = 120
 
     def __init__(self, parent=None):
@@ -25,7 +26,7 @@ class TopBar(QToolBar):
         self.drumpad_btn = QAction("Drumpad", self)
         self.drumpad_btn.setCheckable(True)
         self.drumpad_btn.setChecked(True)
-        self.drumpad_btn.triggered.connect(lambda event: print("Drumpad"))
+        self.drumpad_btn.triggered.connect(lambda checked, p='Drumpad': self.navigationRequested.emit(p))
         self.pageswitches.addAction(self.drumpad_btn)
         self.addAction(self.drumpad_btn)
 
@@ -56,6 +57,13 @@ class TopBar(QToolBar):
         spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.addWidget(spacer)
 
+        self.volume_slider = QSlider(Qt.Orientation.Horizontal)
+        self.volume_slider.setRange(0, 100)
+        self.volume_slider.setValue(90)
+        self.volume_slider.setFixedWidth(120)
+        self.volume_slider.valueChanged.connect(self._emitVolume)
+        self.addWidget(self.volume_slider)
+
         theme_button = self.addAction("Theme")
         theme_button.triggered.connect(self._handle_theme_toggle)
 
@@ -70,6 +78,8 @@ class TopBar(QToolBar):
     def _handle_theme_toggle(self):
         self.themeToggleRequested.emit()
 
+    def _emitVolume(self, value):
+        self.volumeChanged.emit(value)
     def setBPMValue(self, value):
         self.project_BPM = value
         self.bpmlabel.setText(f"BPM:{self.project_BPM}")

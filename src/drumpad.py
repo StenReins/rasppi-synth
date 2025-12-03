@@ -103,7 +103,7 @@ class DrumPad(QWidget):
 
         self.initUI()
 
-        self.pads = []
+        ##self.pads = []
     
     def initUI(self):
         layout = QGridLayout()
