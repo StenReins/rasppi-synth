@@ -1,49 +1,29 @@
 from PyQt6.QtWidgets import QWidget, QGridLayout, QPushButton, QMenu
-from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
-from PyQt6.QtCore import QUrl
+from PyQt6.QtCore import QUrl, pyqtSignal, QTimer
+from audio import AudioPlayer
 import tkinter
 from gpiozero import Button
 from tkinter import filedialog
-import time
+from topbar import TopBar
 import os
 
 matrix_size = 2
 
-class Audio:
-    def __init__(self):
-        self.output = QAudioOutput()
-        self.player = QMediaPlayer()
-        self.player.setAudioOutput(self.output)
-
-        self.output.setVolume(0.9)
-
-    def play(self, path):
-        if not path:
-            return
-        
-        self.player.stop()              
-        self.player.setSource(QUrl.fromLocalFile(path))
-        self.player.play()
-        print("Playing:", path)   
+def getProjectBPM():
+    return TopBar().bpmslider.value()
 
 class Pad(QPushButton):
-    states = {
-    'triggered': 0,
-    'held': 1,
-    'looped':2
-    }
-    def __init__(self, number = None, path = None, parent = None, state = states['triggered']):
+    def __init__(self, number = None, path = None, parent = None, state = 'trigger', bpm = 120):
+        super().__init__(parent)
         self.path = path
         self.pad_num = number
         self.state = state
 
-        self.padbutton = Button(self.pad_num + 1)
-        
-        super().__init__(parent)
+        self.bpm = int(bpm)
+        self.audio = AudioPlayer(path = None, bpm = self.bpm)
 
-        ## audi player
-        self.audio = Audio()
-        
+        self.gpio = Button(self.pad_num + 1)
+
         self.setFixedSize(150, 150) ## panna drumpad style style sisse
         self.setStyleSheet("""    
             QPushButton {
@@ -59,23 +39,52 @@ class Pad(QPushButton):
                 background-color: #1abc9c;
             }
         """)
+
         if self.pad_num is not None:
             self.setText(f"Pad {self.pad_num}")
 
         self.clicked.connect(self.playAudio)
-        
+
+    def set_bpm(self, bpm):
+        self.bpm = int(bpm)
+        self.audio.set_bpm(self.bpm)
+
     def playAudio(self):
-        self.audio.play(self.path)
+        if self.path:
+            self.audio.play(self.path, loop=(self.state == 'loop'))
+        else:
+            pass
 
     def contextMenuEvent(self, a0): ## a0 -> event if its not working
         menu = QMenu(self)
+        
+        pad_changeState = menu.addMenu("Pad state")
         pad_modify = menu.addAction("Modify")
         pad_reset = menu.addAction("Reset")
+
+        trigger_state = pad_changeState.addAction("Trigger")
+        loop_state = pad_changeState.addAction("Loop")
+
         action = menu.exec(a0.globalPos())
+
         if action == pad_modify:
             self.modifyMusicFile()
         elif action == pad_reset:
             self.resetMusicFile()
+
+        ##submenu actions
+        if action == trigger_state:
+            self.changeStateTrigger()
+        elif action == loop_state:
+            self.changeStateLoop()
+
+    def changeStateTrigger(self):
+        self.state = 'trigger'
+        print(self.state)
+    def changeStateLoop(self):
+        self.state = 'loop'
+        print(self.state)
+
     def modifyMusicFile(self):
         tkinter.Tk().withdraw()
         self.path = filedialog.askopenfilename(filetypes=(("Audio Files", ".wav .mp3"),   ("All Files", "*.*")))
@@ -85,21 +94,7 @@ class Pad(QPushButton):
     def resetMusicFile(self):
         if self.path is not None:
             self.path = None
-            self.setText(f"Pad {self.pad_num}")
-    def readButtonPress(self):
-        while True:
-            match self.state:
-                case 0: ##trigger
-                    if self.padbutton.is_pressed():
-                        print(f"Pad {self.pad_num} pressed")
-                        self.click()
-                case 1: ## hold
-                    print(f"Holding pad {self.pad_num}")
-                    return 0 ##TBD
-                case 2: ##loop
-                    print(f"Looping pad {self.pad_num}")
-                    return 0 ##TBD
-                
+            self.setText(f"Pad {self.pad_num}")              
 
 class DrumPad(QWidget):
     pads = []

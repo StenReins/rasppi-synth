@@ -1,11 +1,14 @@
-from PyQt6.QtWidgets import QToolBar, QWidget, QLabel, QSizePolicy
+from PyQt6.QtWidgets import QToolBar, QWidget, QLabel, QSlider, QSizePolicy
 from PyQt6.QtGui import QFont, QAction, QActionGroup, QIcon
-from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from PyQt6.QtCore import Qt, pyqtSignal, QRect, pyqtSlot
 from styles import topbar
 
 class TopBar(QToolBar):
     navigationRequested = pyqtSignal(str)
-    themeToggleRequested = pyqtSignal() 
+    themeToggleRequested = pyqtSignal()
+    
+    project_BPM = 120
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
@@ -32,6 +35,23 @@ class TopBar(QToolBar):
         self.pageswitches.addAction(self.record_btn)
         self.addAction(self.record_btn)
 
+        ##Slider for setting project BPM
+        self.bpmslider = QSlider()
+        self.bpmslider.setToolTip("BPM")
+        self.bpmslider.setGeometry(QRect(0,0,80,16))
+        self.bpmslider.setOrientation(Qt.Orientation.Horizontal)
+        self.bpmslider.setRange(0,300)
+        self.bpmslider.setValue(120)
+        self.bpmslider.setSingleStep(1)
+        self.bpmslider.setPageStep(10)
+
+        self.bpmslider.valueChanged.connect(self.setBPMValue)
+
+        self.bpmlabel = QLabel(f"BPM:{self.project_BPM}")
+        self.addWidget(self.bpmlabel)
+        self.addWidget(self.bpmslider)
+
+
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.addWidget(spacer)
@@ -49,3 +69,7 @@ class TopBar(QToolBar):
 
     def _handle_theme_toggle(self):
         self.themeToggleRequested.emit()
+
+    def setBPMValue(self, value):
+        self.project_BPM = value
+        self.bpmlabel.setText(f"BPM:{self.project_BPM}")
