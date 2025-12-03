@@ -41,21 +41,8 @@ class Pad(QPushButton):
         ## audi player
         self.audio = Audio()
         
-        self.setFixedSize(150, 150) ## panna drumpad style style sisse
-        self.setStyleSheet("""    
-            QPushButton {
-                background-color: #2c3e50;
-                color: white;
-                border-radius: 8px;
-                font-size: 14px;
-            }
-            QPushButton:hover {
-                background-color: #34495e;
-            }
-            QPushButton:pressed {
-                background-color: #1abc9c;
-            }
-        """)
+        self.setFixedSize(150, 150)
+
         if self.pad_num is not None:
             self.setText(f"Pad {self.pad_num}")
 
@@ -91,14 +78,14 @@ class DrumPad(QWidget):
 
         self.initUI()
 
-        self.pads = []
+        ##self.pads = []
     
     def initUI(self):
         layout = QGridLayout()
         layout.setSpacing(10) 
         for row in range(3):
             for col in range(3):
-                pad_num = row * 4 + col + 1
+                pad_num = row * 3 + col + 1
                 pad = Pad(pad_num)
                 layout.addWidget(pad, row, col)
                 self.pads.append([pad, pad_num])

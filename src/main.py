@@ -39,9 +39,25 @@ class Raspsynth(QMainWindow):
 
             self.topbar.themeToggleRequested.connect(self.toggleTheme)
 
+            self.topbar.volumeChanged.connect(self.updateVolume)
+
             self.setPage('drumpad')
         except Exception as e:
             print("Something went wrong.", e)
+
+    def updateVolume(self, value):
+        current_page = self.widget.currentWidget()
+
+    def updateVolume(self, value):
+        current_page = self.widget.currentWidget()
+
+        if hasattr(current_page, "pads"):
+            volume_float = value / 100
+
+            for pad, num in current_page.pads:
+                pad.audio.output.setVolume(volume_float)   # <-- THIS is all you need
+                print(f"Pad {num} volume set to {value}% (float {volume_float})")
+                
 
     def setPage(self, page_name: str):
         idx = page_indices.get(page_name, 0)
