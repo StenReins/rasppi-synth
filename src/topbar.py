@@ -1,13 +1,14 @@
-from PyQt6.QtWidgets import QToolBar, QWidget, QLabel, QSizePolicy, QSlider
-from PyQt6.QtGui import QFont, QAction, QActionGroup
-from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtWidgets import QToolBar, QWidget, QLabel, QSlider, QSizePolicy
+from PyQt6.QtGui import QFont, QAction, QActionGroup, QIcon
+from PyQt6.QtCore import Qt, pyqtSignal, QRect, pyqtSlot
 from styles import topbar
 
 class TopBar(QToolBar):
     navigationRequested = pyqtSignal(str)
     themeToggleRequested = pyqtSignal()
 
-    volumeChanged = pyqtSignal(int) 
+    volumeChanged = pyqtSignal(int)
+    project_BPM = 120
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -28,6 +29,29 @@ class TopBar(QToolBar):
         self.drumpad_btn.triggered.connect(lambda checked, p='Drumpad': self.navigationRequested.emit(p))
         self.pageswitches.addAction(self.drumpad_btn)
         self.addAction(self.drumpad_btn)
+
+        self.record_btn = QAction("Record", self)
+        self.record_btn.setIcon(QIcon("src/resources/icons/record-icon.svg"))
+        self.record_btn.setCheckable(True)
+        self.pageswitches.addAction(self.record_btn)
+        self.addAction(self.record_btn)
+
+        ##Slider for setting project BPM
+        self.bpmslider = QSlider()
+        self.bpmslider.setToolTip("BPM")
+        self.bpmslider.setGeometry(QRect(0,0,80,16))
+        self.bpmslider.setOrientation(Qt.Orientation.Horizontal)
+        self.bpmslider.setRange(0,300)
+        self.bpmslider.setValue(120)
+        self.bpmslider.setSingleStep(1)
+        self.bpmslider.setPageStep(10)
+
+        self.bpmslider.valueChanged.connect(self.setBPMValue)
+
+        self.bpmlabel = QLabel(f"BPM:{self.project_BPM}")
+        self.addWidget(self.bpmlabel)
+        self.addWidget(self.bpmslider)
+
 
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -56,3 +80,6 @@ class TopBar(QToolBar):
 
     def _emitVolume(self, value):
         self.volumeChanged.emit(value)
+    def setBPMValue(self, value):
+        self.project_BPM = value
+        self.bpmlabel.setText(f"BPM:{self.project_BPM}")

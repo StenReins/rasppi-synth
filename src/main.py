@@ -4,8 +4,13 @@ from drumpad import DrumPad
 from topbar import TopBar
 from styles import STYLESHEET
 import sys
+import os
 from drumpad import DrumPad
 from styles import STYLESHEET, ALT_STYLESHEET, topbar, ALT_TOPBAR
+
+##env variables
+os.environ['GPIOZERO_PIN_FACTORY']='mock' ##for use in dev
+
 
 
 page_indices = {
@@ -22,7 +27,7 @@ class Raspsynth(QMainWindow):
             self.setWindowTitle("rasppy v0.0.1")
             ##self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
             self.setStyleSheet(STYLESHEET)
-            self.setGeometry(20, 20, 1080, 720)
+            self.setGeometry(20, 20, 300, 300)
             # central widget
             self.widget = QStackedWidget()
             self.setCentralWidget(self.widget)
