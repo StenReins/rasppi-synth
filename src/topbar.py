@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QToolBar, QWidget, QLabel, QSlider, QSizePolicy
-from PyQt6.QtGui import QFont, QAction, QActionGroup, QIcon
-from PyQt6.QtCore import Qt, pyqtSignal, QRect, pyqtSlot
+from PyQt5.QtWidgets import QToolBar, QWidget, QLabel, QSlider, QSizePolicy, QAction, QActionGroup
+from PyQt5.QtGui import QFont, QIcon
+from PyQt5.QtCore import Qt, pyqtSignal, QRect, pyqtSlot
 from styles import topbar
 
 class TopBar(QToolBar):
@@ -31,7 +31,7 @@ class TopBar(QToolBar):
         self.addAction(self.drumpad_btn)
 
         self.record_btn = QAction("Record", self)
-        self.record_btn.setIcon(QIcon("src/resources/icons/record-icon.svg"))
+        self.record_btn.setIcon(QIcon("./resources/icons/record-icon.svg"))
         self.record_btn.setCheckable(True)
         self.pageswitches.addAction(self.record_btn)
         self.addAction(self.record_btn)
