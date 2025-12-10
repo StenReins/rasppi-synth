@@ -1,5 +1,5 @@
 # Projekti dokumentatsioon
-
+Projekti dokumentatsiooni link: [Link](https://docs.google.com/document/d/1eUriTMEWQleEzpeULdo9uFQiQpmN06DFgFZSTZ3Hk30/edit?usp=sharing)
 ## 1. Projekti eesmärk ja seadme lühikirjeldus
 **Mis asi see on, mida ja miks me teeme? Millist praktilist probleemi see lahendab?**
 
