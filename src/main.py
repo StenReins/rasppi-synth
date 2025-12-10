@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
-from PyQt6.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget
+from PyQt5.QtCore import pyqtSignal
 from styles import STYLESHEET, ALT_STYLESHEET, topbar, ALT_TOPBAR
 from drumpad import DrumPad
 from topbar import TopBar
@@ -8,7 +8,7 @@ import os
 
 
 ##env variables
-os.environ['GPIOZERO_PIN_FACTORY']='mock' ##for use in dev
+##os.environ['GPIOZERO_PIN_FACTORY']='mock' ##for use in dev
 
 
 

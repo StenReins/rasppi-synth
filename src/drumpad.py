@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QGridLayout, QPushButton, QMenu
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QMenu
 from audio import AudioPlayer
 import tkinter
 from gpiozero import Button
@@ -17,11 +17,12 @@ class Pad(QPushButton):
         self.path = path
         self.pad_num = number
         self.loop = loop
+        
+        self.gpio = Button(self.pad_num + 1)
+        self.gpio.when_pressed = self.readButtonPress
 
         self.bpm = getProjectBPM()
         self.audio = AudioPlayer(self.bpm, self.loop)
-
-        self.gpio = Button(self.pad_num + 1)
 
         self.setFixedSize(150, 150) ## panna drumpad style style sisse
 
@@ -77,6 +78,10 @@ class Pad(QPushButton):
         if self.path is not None:
             self.path = None
             self.setText(f"Pad {self.pad_num}")
+            
+    def readButtonPress(self):
+        self.click()
+        print(f'Pad pressed:{self.pad_num}')
 
 class DrumPad(QWidget):
     pads = []
